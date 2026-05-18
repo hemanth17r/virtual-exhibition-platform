@@ -7,7 +7,7 @@
     <div class="relative">
         <div class="aspect-[21/9] sm:aspect-[3/1] lg:aspect-[4/1] overflow-hidden bg-gradient-to-br from-indigo-200 to-purple-200">
             @if($exhibition->banner_image)
-                <img src="{{ asset('storage/' . $exhibition->banner_image) }}"
+                <img src="{{ $exhibition->banner_url }}"
                      alt="{{ $exhibition->title }}"
                      class="w-full h-full object-cover">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
@@ -65,7 +65,7 @@
                     <div class="group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300">
                         <!-- Artwork Image -->
                         <div class="aspect-square overflow-hidden bg-gray-100">
-                            <img src="{{ asset('storage/' . $artwork->image) }}"
+                            <img src="{{ $artwork->image_url }}"
                                  alt="{{ $artwork->title }}"
                                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                         </div>

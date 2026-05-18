@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+use Illuminate\Support\Str;
+
 class Exhibition extends Model
 {
     use HasFactory;
@@ -50,5 +52,21 @@ class Exhibition extends Model
     public function artworks(): HasMany
     {
         return $this->hasMany(Artwork::class);
+    }
+
+    /**
+     * Get the resolved URL for the banner image.
+     */
+    public function getBannerUrlAttribute(): ?string
+    {
+        if (!$this->banner_image) {
+            return null;
+        }
+
+        if (Str::startsWith($this->banner_image, ['http://', 'https://'])) {
+            return $this->banner_image;
+        }
+
+        return asset('storage/' . $this->banner_image);
     }
 }

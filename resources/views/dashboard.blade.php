@@ -30,7 +30,7 @@
                             <!-- Banner Image -->
                             <div class="aspect-[16/10] overflow-hidden bg-gradient-to-br from-indigo-100 to-purple-100">
                                 @if($exhibition->banner_image)
-                                    <img src="{{ asset('storage/' . $exhibition->banner_image) }}"
+                                    <img src="{{ $exhibition->banner_url }}"
                                          alt="{{ $exhibition->title }}"
                                          class="w-full h-full object-cover">
                                 @else

@@ -75,7 +75,7 @@
                             <div class="mb-4">
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Current Banner</label>
                                 <div class="rounded-xl overflow-hidden border border-gray-200 max-w-md">
-                                    <img src="{{ asset('storage/' . $exhibition->banner_image) }}"
+                                    <img src="{{ $exhibition->banner_url }}"
                                          alt="Current banner"
                                          class="w-full h-40 object-cover">
                                 </div>
@@ -193,7 +193,7 @@
                             @foreach($exhibition->artworks as $artwork)
                                 <div class="bg-gray-50 rounded-xl overflow-hidden border border-gray-100">
                                     <div class="aspect-square overflow-hidden">
-                                        <img src="{{ asset('storage/' . $artwork->image) }}"
+                                        <img src="{{ $artwork->image_url }}"
                                              alt="{{ $artwork->title }}"
                                              class="w-full h-full object-cover">
                                     </div>
