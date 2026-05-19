@@ -55,7 +55,7 @@ class Exhibition extends Model
         return $this->hasMany(Artwork::class);
     }
 
-    public function banner_url(): \Illuminate\Database\Eloquent\Casts\Attribute
+    public function bannerUrl(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
         return \Illuminate\Database\Eloquent\Casts\Attribute::make(
             get: function () {
