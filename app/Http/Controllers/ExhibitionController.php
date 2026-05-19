@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Artwork;
 use App\Models\Exhibition;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
@@ -18,10 +20,39 @@ class ExhibitionController extends Controller
     {
         $exhibitions = Exhibition::with('user')
             ->latest('exhibition_date')
-            ->take(12)
+            ->take(6)
             ->get();
 
-        return view('home', compact('exhibitions'));
+        // Platform stats
+        $stats = [
+            'exhibitions' => \App\Models\Exhibition::count(),
+            'artworks'    => \App\Models\Artwork::count(),
+            'creators'    => \App\Models\User::count(),
+            'likes'       => \DB::table('likes')->count(),
+        ];
+
+        // Top creators leaderboard (by total artwork likes)
+        $topCreators = \App\Models\User::withCount('exhibitions')
+            ->with('exhibitions.artworks.likes')
+            ->get()
+            ->map(function ($user) {
+                $user->total_likes = $user->exhibitions->flatMap(fn($ex) => $ex->artworks)->flatMap(fn($art) => $art->likes)->count();
+                $user->total_artworks = $user->exhibitions->flatMap(fn($ex) => $ex->artworks)->count();
+                return $user;
+            })
+            ->sortByDesc('total_likes')
+            ->take(5)
+            ->values();
+
+        // Trending artworks (most liked)
+        $trendingArtworks = \App\Models\Artwork::withCount('likes')
+            ->with('exhibition')
+            ->having('likes_count', '>', 0)
+            ->orderByDesc('likes_count')
+            ->take(4)
+            ->get();
+
+        return view('home', compact('exhibitions', 'stats', 'topCreators', 'trendingArtworks'));
     }
 
     /**
@@ -32,7 +63,12 @@ class ExhibitionController extends Controller
         $query = Exhibition::with('user')->latest('exhibition_date');
 
         if ($request->filled('search')) {
-            $query->where('title', 'like', '%' . $request->search . '%');
+            $s = $request->search;
+            $query->where(function ($q) use ($s) {
+                $q->where('title', 'like', "%{$s}%")
+                  ->orWhere('description', 'like', "%{$s}%")
+                  ->orWhereHas('user', fn($u) => $u->where('name', 'like', "%{$s}%"));
+            });
         }
 
         if ($request->filled('category')) {

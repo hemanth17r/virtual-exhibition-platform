@@ -7,8 +7,8 @@ use Illuminate\Http\Request;
 
 class CreatorController extends Controller
 {
-    public function show(User $user)
+    public function show(User $creator)
     {
-        return view('creator.show', compact('user'));
+        return view('creator.show', ['user' => $creator]);
     }
 }
