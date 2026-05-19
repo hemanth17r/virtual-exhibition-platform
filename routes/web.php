@@ -13,7 +13,14 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [ExhibitionController::class, 'home'])->name('home');
 Route::get('/exhibitions', [ExhibitionController::class, 'index'])->name('exhibitions.index');
-Route::get('/exhibitions/{exhibition}', [ExhibitionController::class, 'show'])->name('exhibitions.show');
+Route::get('/exhibitions/{exhibition}', [App\Http\Controllers\ExhibitionController::class, 'show'])->name('exhibitions.show');
+
+Route::get('/creator/{creator}', [App\Http\Controllers\CreatorController::class, 'show'])->name('creator.show');
+
+Route::middleware(['auth'])->group(function () {
+    Route::post('/artworks/{artwork}/like', [App\Http\Controllers\InteractionController::class, 'toggleLike'])->name('artworks.like');
+    Route::post('/exhibitions/{exhibition}/comment', [App\Http\Controllers\InteractionController::class, 'storeComment'])->name('exhibitions.comment');
+});
 
 /*
 |--------------------------------------------------------------------------

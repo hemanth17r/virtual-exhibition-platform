@@ -56,6 +56,25 @@
                             @enderror
                         </div>
 
+                        <!-- Category -->
+                        <div class="mb-6">
+                            <label for="category" class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                            <select name="category"
+                                    id="category"
+                                    required
+                                    class="w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
+                                <option value="General" {{ old('category', $exhibition->category) == 'General' ? 'selected' : '' }}>General</option>
+                                <option value="Painting" {{ old('category', $exhibition->category) == 'Painting' ? 'selected' : '' }}>Painting</option>
+                                <option value="Photography" {{ old('category', $exhibition->category) == 'Photography' ? 'selected' : '' }}>Photography</option>
+                                <option value="Sculpture" {{ old('category', $exhibition->category) == 'Sculpture' ? 'selected' : '' }}>Sculpture</option>
+                                <option value="Digital Art" {{ old('category', $exhibition->category) == 'Digital Art' ? 'selected' : '' }}>Digital Art</option>
+                                <option value="Mixed Media" {{ old('category', $exhibition->category) == 'Mixed Media' ? 'selected' : '' }}>Mixed Media</option>
+                            </select>
+                            @error('category')
+                                <p class="mt-1.5 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
                         <!-- Exhibition Date -->
                         <div class="mb-6">
                             <label for="exhibition_date" class="block text-sm font-medium text-gray-700 mb-2">Exhibition Date</label>

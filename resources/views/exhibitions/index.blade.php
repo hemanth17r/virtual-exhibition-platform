@@ -10,6 +10,42 @@
             <p class="mt-2 text-gray-500 text-lg">Browse through our collection of virtual exhibitions</p>
         </div>
 
+        <!-- Search and Filters -->
+        <div class="mb-10 flex flex-col md:flex-row gap-4 justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+            <!-- Categories -->
+            <div class="flex flex-wrap gap-2">
+                @php
+                    $categories = ['General', 'Painting', 'Photography', 'Sculpture', 'Digital Art', 'Mixed Media'];
+                    $currentCategory = request('category');
+                @endphp
+                <a href="{{ route('exhibitions.index', ['search' => request('search')]) }}"
+                   class="px-4 py-2 rounded-full text-sm font-medium transition-colors {{ !$currentCategory ? 'bg-indigo-600 text-white shadow-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
+                    All
+                </a>
+                @foreach($categories as $cat)
+                    <a href="{{ route('exhibitions.index', ['category' => $cat, 'search' => request('search')]) }}"
+                       class="px-4 py-2 rounded-full text-sm font-medium transition-colors {{ $currentCategory === $cat ? 'bg-indigo-600 text-white shadow-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
+                        {{ $cat }}
+                    </a>
+                @endforeach
+            </div>
+
+            <!-- Search -->
+            <form action="{{ route('exhibitions.index') }}" method="GET" class="w-full md:w-auto relative">
+                @if(request('category'))
+                    <input type="hidden" name="category" value="{{ request('category') }}">
+                @endif
+                <div class="relative">
+                    <input type="text" name="search" value="{{ request('search') }}"
+                           placeholder="Search exhibitions..."
+                           class="w-full md:w-72 pl-10 pr-4 py-2 rounded-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 text-sm">
+                    <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+            </form>
+        </div>
+
         @if($exhibitions->count() > 0)
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 @foreach($exhibitions as $exhibition)
@@ -30,8 +66,13 @@
                         </div>
 
                         <!-- Card Content -->
-                        <div class="p-6">
-                            <div class="flex items-center text-sm text-indigo-600 font-medium mb-2">
+                        <div class="p-6 relative">
+                            <!-- Category Badge -->
+                            <div class="absolute -top-4 left-6 bg-white px-3 py-1 rounded-full shadow-sm text-xs font-semibold text-indigo-600 border border-gray-100">
+                                {{ $exhibition->category ?? 'General' }}
+                            </div>
+
+                            <div class="flex items-center text-sm text-indigo-600 font-medium mb-2 mt-2">
                                 <svg class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
                                 </svg>
@@ -43,7 +84,9 @@
                             <p class="mt-2 text-sm text-gray-500 line-clamp-2">{{ $exhibition->description }}</p>
 
                             <div class="mt-5 flex items-center justify-between">
-                                <span class="text-xs text-gray-400">by {{ $exhibition->user->name }}</span>
+                                <a href="{{ route('creator.show', $exhibition->user) }}" class="text-xs text-gray-500 hover:text-indigo-600 transition-colors">
+                                    by <span class="font-medium">{{ $exhibition->user->name }}</span>
+                                </a>
                                 <a href="{{ route('exhibitions.show', $exhibition) }}"
                                    class="inline-flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-800 transition-colors duration-200">
                                     View Exhibition

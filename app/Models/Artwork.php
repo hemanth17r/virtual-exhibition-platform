@@ -47,4 +47,9 @@ class Artwork extends Model
 
         return asset('storage/' . $this->image);
     }
+
+    public function likes(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Like::class);
+    }
 }

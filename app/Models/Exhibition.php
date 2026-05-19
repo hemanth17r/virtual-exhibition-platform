@@ -21,6 +21,7 @@ class Exhibition extends Model
     protected $fillable = [
         'title',
         'description',
+        'category',
         'exhibition_date',
         'banner_image',
         'user_id',
@@ -54,19 +55,24 @@ class Exhibition extends Model
         return $this->hasMany(Artwork::class);
     }
 
-    /**
-     * Get the resolved URL for the banner image.
-     */
-    public function getBannerUrlAttribute(): ?string
+    public function banner_url(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
-        if (!$this->banner_image) {
-            return null;
-        }
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(
+            get: function () {
+                if ($this->banner_image) {
+                    // Check if it's an external URL (starts with http or https)
+                    if (str_starts_with($this->banner_image, 'http')) {
+                        return $this->banner_image;
+                    }
+                    return asset('storage/' . $this->banner_image);
+                }
+                return 'https://images.unsplash.com/photo-1542204165-65bf26472b9b?q=80&w=1974&auto=format&fit=crop';
+            }
+        );
+    }
 
-        if (Str::startsWith($this->banner_image, ['http://', 'https://'])) {
-            return $this->banner_image;
-        }
-
-        return asset('storage/' . $this->banner_image);
+    public function comments(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Comment::class);
     }
 }

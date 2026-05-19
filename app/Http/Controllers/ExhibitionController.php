@@ -27,11 +27,19 @@ class ExhibitionController extends Controller
     /**
      * Display all exhibitions (public listing).
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        $exhibitions = Exhibition::with('user')
-            ->latest('exhibition_date')
-            ->paginate(12);
+        $query = Exhibition::with('user')->latest('exhibition_date');
+
+        if ($request->filled('search')) {
+            $query->where('title', 'like', '%' . $request->search . '%');
+        }
+
+        if ($request->filled('category')) {
+            $query->where('category', $request->category);
+        }
+
+        $exhibitions = $query->paginate(12)->withQueryString();
 
         return view('exhibitions.index', compact('exhibitions'));
     }
@@ -76,6 +84,7 @@ class ExhibitionController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string|max:5000',
+            'category' => 'required|string|max:50',
             'exhibition_date' => 'required|date',
             'banner_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
@@ -119,6 +128,7 @@ class ExhibitionController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string|max:5000',
+            'category' => 'required|string|max:50',
             'exhibition_date' => 'required|date',
             'banner_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
